@@ -8,6 +8,8 @@ target 'smart_home' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
+
   target 'smart_homeTests' do
     inherit! :complete
     # Pods for testing

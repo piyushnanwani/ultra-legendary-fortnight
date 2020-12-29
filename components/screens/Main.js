@@ -21,7 +21,6 @@ export default function Main({navigation}) {
         <Button
           style={styles.signInBtn}
           onPress={() => {
-            Alert.alert('Button pressed my boy!');
             navigation.navigate('Home');
           }}
           title="Sign in with Google"></Button>

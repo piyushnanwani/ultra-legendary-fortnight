@@ -1,19 +1,27 @@
-import React, { useState } from "react";
-import { Text, View, Button, Alert, TextInput, StyleSheet } from "react-native";
+import React, {useState} from 'react';
+import {
+  Text,
+  View,
+  Button,
+  Alert,
+  TextInput,
+  StyleSheet,
+  PermissionsAndroid,
+} from 'react-native';
 
 export default class MasterForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentStep: 1,
-      email: "",
-      wifiName: "",
-      wifiPassword: "",
+      email: '',
+      wifiName: '',
+      wifiPassword: '',
     };
   }
 
   handleChange = (event) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     this.setState({
       [name]: value,
     });
@@ -21,7 +29,7 @@ export default class MasterForm extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    const { email, wifiName, wifiPassword } = this.state;
+    const {email, wifiName, wifiPassword} = this.state;
     Alert.alert(`Your registration detail: \n 
            Email: ${email} \n 
            wifiName: ${wifiName} \n
@@ -31,10 +39,9 @@ export default class MasterForm extends React.Component {
   _next = () => {
     let currentStep = this.state.currentStep;
     if (currentStep == 3) {
-      console.log("Hey on step 3");
-      const { navigation } = this.props;
-      console.log(navigation);
-      navigation.navigate("AddingDevice");
+      const {navigation} = this.props;
+      requestBluetoothLocationPermission();
+      navigation.navigate('AddingDevice');
     }
 
     currentStep = currentStep >= 2 ? 3 : currentStep + 1;
@@ -100,7 +107,7 @@ function Step1(props) {
   return (
     <View style={styles.stepStyle}>
       <Text>
-        Step 1: {"\n\n"}
+        Step 1: {'\n\n'}
         Power on the device after it has been powered off for 10s
       </Text>
     </View>
@@ -111,26 +118,26 @@ function Step2(props) {
   if (props.currentStep !== 2) {
     return null;
   }
-  const [wifiName, setWifiName] = useState("Enter WiFi Name");
-  const [wifiPassword, setWifiPassword] = useState("Enter Password");
+  const [wifiName, setWifiName] = useState('Enter WiFi Name');
+  const [wifiPassword, setWifiPassword] = useState('Enter Password');
   return (
     <View style={styles.stepStyle}>
       <Text>
-        Step 2: {"\n\n"}
-        Enter your WiFi credentials {"\n"}
+        Step 2: {'\n\n'}
+        Enter your WiFi credentials {'\n'}
       </Text>
 
       <TextInput
         style={{
           height: 40,
-          borderColor: "gray",
+          borderColor: 'gray',
           borderWidth: 1,
           paddingLeft: 5,
         }}
         placeholder="Enter WiFi Name"
         value={props.wifiName}
         onFocus={() => {
-          if (wifiName == "Enter WiFi Name") setWifiName("");
+          if (wifiName == 'Enter WiFi Name') setWifiName('');
         }}
         onChangeText={(text) => setWifiName(text)}
         value={wifiName}
@@ -139,7 +146,7 @@ function Step2(props) {
       <TextInput
         style={{
           height: 40,
-          borderColor: "gray",
+          borderColor: 'gray',
           borderWidth: 1,
           paddingLeft: 5,
         }}
@@ -147,7 +154,7 @@ function Step2(props) {
         value={props.wifiPassword}
         secureTextEntry={true}
         onFocus={() => {
-          if (wifiPassword == "Enter password") setWifiPassword("");
+          if (wifiPassword == 'Enter password') setWifiPassword('');
         }}
         onChangeText={(text) => setWifiPassword(text)}
         value={wifiPassword}
@@ -163,8 +170,8 @@ function Step3(props) {
   return (
     <View style={styles.stepStyle}>
       <Text>
-        Step 3: {"\n\n"}
-        Turn on your Bluetooth and select your device {"\n"}
+        Step 3: {'\n\n'}
+        Turn on your Bluetooth and select your device {'\n'}
       </Text>
     </View>
   );
@@ -173,8 +180,8 @@ function Step3(props) {
 const styles = StyleSheet.create({
   btnView: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     maxHeight: 30,
     marginBottom: 25,
   },
@@ -183,7 +190,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   textStyle: {
-    textAlign: "center",
+    textAlign: 'center',
     flex: 1,
   },
   stepStyle: {
@@ -191,3 +198,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+const requestBluetoothLocationPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+    ]);
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the Location');
+    } else {
+      console.log('Location permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};

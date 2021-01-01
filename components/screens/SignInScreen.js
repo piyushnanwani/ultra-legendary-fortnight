@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,8 +9,16 @@ import {
   Alert,
 } from 'react-native';
 import GlobalStyles from '../GlobalStyles';
-
-export default function Main({navigation}) {
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-community/google-signin';
+import {AuthContext} from '../../App';
+export default function SignInScreen({navigation}) {
+  const {signIn} = React.useContext(AuthContext);
+  const {isSignedIn} = React.useContext(AuthContext);
+  const {getCurrentUser} = React.useContext(AuthContext);
   return (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={styles.titleView}>
@@ -18,12 +26,20 @@ export default function Main({navigation}) {
       </View>
 
       <View style={styles.signInBtnView}>
-        <Button
-          style={styles.signInBtn}
-          onPress={() => {
-            navigation.navigate('Home');
+        <GoogleSigninButton
+          onPress={async () => {
+            const isSignIn = await isSignedIn();
+            console.log(isSignIn);
+            if (!isSignIn) {
+              console.log('sign in !');
+              signIn();
+            } else {
+              // get and sets current user to App state & calls Async storage
+              console.log('get user !');
+              getCurrentUser();
+            }
           }}
-          title="Sign in with Google"></Button>
+        />
       </View>
     </SafeAreaView>
   );

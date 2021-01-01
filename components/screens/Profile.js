@@ -1,5 +1,5 @@
-import "react-native-gesture-handler";
-import React from "react";
+import 'react-native-gesture-handler';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,23 +9,44 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
-} from "react-native";
-import GlobalStyles from "../GlobalStyles";
+} from 'react-native';
+import GlobalStyles from '../GlobalStyles';
+import {AuthContext} from '../../App';
 
-export default function Profile({ navigation }) {
+export default function Profile({navigation}) {
+  const {getCurrentUser2} = React.useContext(AuthContext);
+  const {signOut} = React.useContext(AuthContext);
+  const [name, setName] = useState('Username');
+  const [email, setEmail] = useState('user@email.com');
+  const [photo, setPhoto] = useState(null);
+  useEffect(() => {
+    getCurrentUser2().then((response) => {
+      setName(response.user.name);
+      setEmail(response.user.email);
+      setPhoto(response.user.photo);
+    });
+  }, []);
+
   return (
     <View style={[styles.container, GlobalStyles.droidSafeArea]}>
       {/* User profile View */}
       <View style={styles.profileView}>
-        <Image
-          style={styles.userImg}
-          source={require("../../assets/me-icon-pink.png")}
-        />
-
+        {photo == '' ? (
+          <Image
+            style={styles.userImg}
+            source={require('../../assets/me-icon-pink.png')}
+          />
+        ) : (
+          <Image style={styles.userImg} source={{uri: photo}} />
+        )}
         {/* User Details */}
         <View style={styles.userDetails}>
-          <Text style={styles.userName}>User name</Text>
-          <Text style={styles.userEmail}>demo@emailid.com</Text>
+          <Text style={styles.userName}>{name}</Text>
+          {/* <Text style={styles.userName}>Piyush Nanwani</Text> */}
+          <Text style={styles.userEmail}>
+            {email}
+            {/* dummy@email.com {userProfile.user.email} */}
+          </Text>
         </View>
       </View>
 
@@ -35,31 +56,29 @@ export default function Profile({ navigation }) {
           style={styles.signOutBtn}
           title="Sign out"
           onPress={() => {
-            Alert.alert("Signed out successfully!");
-            navigation.navigate("Sign In");
-          }}
-        ></Button>
+            signOut();
+          }}></Button>
       </View>
 
       {/* Bottom NavBar */}
       <View style={styles.dock}>
         <View style={styles.navHome}>
-          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <Image
               style={styles.navIcon}
-              source={require("../../assets/home-icon-black.png")}
+              source={require('../../assets/home-icon-black.png')}
             />
 
-            <Text style={{ textAlign: "center" }}>Home</Text>
+            <Text style={{textAlign: 'center'}}>Home</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.navMe}>
           <TouchableOpacity>
             <Image
               style={styles.navIcon}
-              source={require("../../assets/me-icon-pink.png")}
+              source={require('../../assets/me-icon-pink.png')}
             />
-            <Text style={{ textAlign: "center", color: "#9B0177" }}>Me</Text>
+            <Text style={{textAlign: 'center', color: '#9B0177'}}>Me</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -69,8 +88,8 @@ export default function Profile({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F3EFEF",
-    flexDirection: "column",
+    backgroundColor: '#F3EFEF',
+    flexDirection: 'column',
     flex: 1,
     paddingTop: 40,
     paddingHorizontal: 20,
@@ -78,10 +97,10 @@ const styles = StyleSheet.create({
   },
   profileView: {
     flex: 1,
-    display: "flex",
-    flexDirection: "row",
-    backgroundColor: "#ffff",
-    justifyContent: "flex-end",
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: '#ffff',
+    justifyContent: 'flex-end',
     paddingTop: 50,
     paddingLeft: 10,
   },
@@ -108,9 +127,9 @@ const styles = StyleSheet.create({
   signOutBtnView: {
     flex: 2,
     // backgroundColor: "#ffff",
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     // alignItems: "center",
-    alignSelf: "center",
+    alignSelf: 'center',
     marginTop: 40,
   },
 
@@ -121,19 +140,19 @@ const styles = StyleSheet.create({
 
   dock: {
     flex: 0.25,
-    justifyContent: "flex-end",
-    display: "flex",
-    flexDirection: "row",
+    justifyContent: 'flex-end',
+    display: 'flex',
+    flexDirection: 'row',
   },
 
   navHome: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
 
   navMe: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
 
   navIcon: {

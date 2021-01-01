@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Button, Text, TextInput, View} from 'react-native';
+import {Button, Text, TextInput, View, ActivityIndicator} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {
@@ -18,8 +18,13 @@ export const AuthContext = React.createContext();
 
 function SplashScreen() {
   return (
-    <View>
-      <Text>Loading...</Text>
+    <View style={{flex: 1}}>
+      <ActivityIndicator
+        size="large"
+        color="black"
+        style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+      />
+      {/* <Text>Loading okay...</Text> */}
     </View>
   );
 }
@@ -161,11 +166,15 @@ export default function App({navigation}) {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
           {state.isLoading ? (
             // We haven't finished checking for the token yet
             <Stack.Screen name="Splash" component={SplashScreen} />
-          ) : state.userToken == null ? (
+          ) : // <Stack.Screen name="Loading" component={ActivityIndicator} />
+          state.userToken == null ? (
             // No token found, user isn't signed in
             <Stack.Screen
               name="SignIn"

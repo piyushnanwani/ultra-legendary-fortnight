@@ -13,17 +13,20 @@ import GlobalStyles from '../GlobalStyles';
 
 export default function Home({navigation}) {
   const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
-  useEffect(() => {
-    // 1. api call to check if any device registered with this user or not
-    if (true) {
-      setIsDeviceRegistered(true);
-    }
+  // useEffect(() => {
+  //   // 1. api call to check if any device registered with this user or not
+  //   if (true) {
+  //     setIsDeviceRegistered(true);
+  //   }
 
-    // if yes, load device dashboard with data from api
-    // if not, button to add device (i.e load default screen)
-  }, []);
+  //   // if yes, load device dashboard with data from api
+  //   // if not, button to add device (i.e load default screen)
+  // }, []);
   return isDeviceRegistered == false ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
+      <Button
+        title="Toggle Device register behavior"
+        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button>
       <View style={styles.imgView}>
         <Image
           style={styles.cloudImg}
@@ -64,8 +67,12 @@ export default function Home({navigation}) {
     </SafeAreaView>
   ) : (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
+      <Button
+        title="Toggle Device register behavior"
+        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button>
       <DeviceDashboard style={styles.deviceDashboard} />
       {/* Bottom Dock */}
+
       <View style={styles.dock}>
         <View style={styles.navHome}>
           <TouchableOpacity>

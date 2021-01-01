@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,10 +8,21 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
+import DeviceDashboard from '../DeviceDashboard';
 import GlobalStyles from '../GlobalStyles';
 
 export default function Home({navigation}) {
-  return (
+  const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
+  useEffect(() => {
+    // 1. api call to check if any device registered with this user or not
+    if (true) {
+      setIsDeviceRegistered(true);
+    }
+
+    // if yes, load device dashboard with data from api
+    // if not, button to add device (i.e load default screen)
+  }, []);
+  return isDeviceRegistered == false ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={styles.imgView}>
         <Image
@@ -29,6 +40,32 @@ export default function Home({navigation}) {
           onPress={() => navigation.navigate('AddDevice')}></Button>
       </View>
 
+      <View style={styles.dock}>
+        <View style={styles.navHome}>
+          <TouchableOpacity>
+            <Image
+              style={styles.navIcon}
+              source={require('../../assets/home-icon-pink.png')}
+            />
+
+            <Text style={{textAlign: 'center', color: '#9B0177'}}>Home</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.navMe}>
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <Image
+              style={styles.navIcon}
+              source={require('../../assets/me-icon-black.png')}
+            />
+            <Text style={{textAlign: 'center'}}>Me</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  ) : (
+    <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
+      <DeviceDashboard style={styles.deviceDashboard} />
+      {/* Bottom Dock */}
       <View style={styles.dock}>
         <View style={styles.navHome}>
           <TouchableOpacity>
@@ -117,5 +154,8 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     marginLeft: 3.5,
+  },
+  deviceDashboard: {
+    flex: 5.8,
   },
 });

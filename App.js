@@ -14,6 +14,8 @@ import Home from './components/screens/Home';
 import Profile from './components/screens/Profile';
 import AddDevice from './components/screens/add-device/AddDevice';
 import AddingDevice from './components/screens/add-device/AddingDevice';
+import sercrets from './sercrets';
+
 export const AuthContext = React.createContext();
 
 function SplashScreen() {
@@ -66,8 +68,7 @@ export default function App({navigation}) {
   // Google Sign In configure
   React.useEffect(() => {
     GoogleSignin.configure({
-      webClientId:
-        '900441724426-1t5sh03r05tbcggsikssfbdb0s6ruleb.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      webClientId: sercrets.GOOGLE_WEB_CLIENT_ID, // client ID of type WEB for your server (needed to verify user ID and offline access)
       offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
       // hostedDomain: '', // specifies a hosted domain restriction
       // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.

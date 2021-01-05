@@ -13,6 +13,8 @@ import DeviceDashboard from '../DeviceDashboard';
 import GlobalStyles from '../GlobalStyles';
 import {AuthContext} from '../../App';
 
+import secrets from '../../sercrets';
+
 export default function Home({navigation}) {
   const {getCurrentUser2} = React.useContext(AuthContext);
 
@@ -39,37 +41,56 @@ export default function Home({navigation}) {
         console.log('response 1');
         return userIdStr;
       })
+      // 1 authenticate => get bearer token
+      // 2 PUT /users
+      // 3 GET /devices/userId => if it exists then display Device dashboard
       .then((userIdStr) => {
-        return fetch('http://192.168.29.190:3000' + '/users/' + userIdStr).then(
-          (userResponse) => {
-            console.log('response 2');
-            console.log(userResponse);
-            return userIdStr;
-          },
-        );
-      })
-      .then((userIdStr) => {
-        fetch('http://192.168.29.190:3000' + '/devices/' + userIdStr, {
-          method: 'GET',
+        const user = {
+          userId: userIdStr,
+          password: secrets.CLIENT_API_PASS,
+        };
+        console.log(user);
+
+        const options = {
+          method: 'POST',
+          body: JSON.stringify(user),
           headers: {
-            Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-        })
-          .then((deviceResponse) => {
-            return deviceResponse.json();
+        };
 
-            // // this means device is registered and we have got device details
-            // if (deviceResponse.status == 200) {
-            //   console.log(deviceResponse);
-            // }
-          })
-          .then((res) => {
-            setIsDeviceRegistered(true);
-            setDevice(res);
-            console.log(res);
-          });
+        // fetch('https://reqres.in/api/users', options)
+        //   .then((res) => res.json())
+        //   .then((res) => console.log(res));
+
+        return fetch(
+          secrets.API_URL + '/users/authenticate',
+          options,
+        ).then((res) => res.json());
       })
+      .then((res) => console.log(res))
+      // .then((userIdStr) => {
+      //   fetch(secrets.API_URL + '/devices/' + userIdStr, {
+      //     method: 'GET',
+      //     headers: {
+      //       Accept: 'application/json',
+      //       'Content-Type': 'application/json',
+      //     },
+      //   })
+      //     .then((deviceResponse) => {
+      //       return deviceResponse.json();
+
+      //       // // this means device is registered and we have got device details
+      //       // if (deviceResponse.status == 200) {
+      //       //   console.log(deviceResponse);
+      //       // }
+      //     })
+      //     .then((res) => {
+      //       setIsDeviceRegistered(true);
+      //       setDevice(res);
+      //       console.log(res);
+      //     });
+      // })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);

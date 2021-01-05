@@ -1,18 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import {Text, View, Switch, Button, Alert} from 'react-native';
 
-const mqttFunction = (state) => {
+const mqttFunction = (state, deviceData) => {
+  console.log(deviceData);
   let stateStr = state == true ? 'ON' : 'OFF';
   var mqtt = require('@taoqf/react-native-mqtt');
   var client = mqtt.connect(
-    'mqtt://io.adafruit.com',
-    (opts = {username: 'morios', password: 'aio_fuXG44GKfB6d5aPqQEF3C8QwlDRo'}),
+    deviceData.brokerUrl,
+    (opts = {
+      username: deviceData.brokerUserName,
+      password: deviceData.brokerPassword,
+    }),
+    // (opts = {username: 'morios', password: 'aio_fuXG44GKfB6d5aPqQEF3C8QwlDRo'}),
   );
 
   client.on('connect', function () {
-    client.subscribe('morios/feeds/led', function (err) {
+    client.subscribe(deviceData.publishedTopic1, function (err) {
       if (!err) {
-        client.publish('morios/feeds/led', stateStr);
+        client.publish(deviceData.subscribedTopic1, stateStr);
       }
     });
   });
@@ -24,7 +29,8 @@ const mqttFunction = (state) => {
   });
 };
 
-export default DeviceDashboard = () => {
+export default DeviceDashboard = ({deviceData}) => {
+  // const [device, setDevice] = useState(deviceData);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
@@ -39,7 +45,7 @@ export default DeviceDashboard = () => {
         title="Connect to client"
         onPress={() => {
           Alert.alert('update to client sent!');
-          mqttFunction(isEnabled);
+          mqttFunction(isEnabled, deviceData);
         }}></Button>
       <View
         style={{
@@ -47,7 +53,7 @@ export default DeviceDashboard = () => {
           justifyContent: 'space-between',
           marginTop: 40,
         }}>
-        <Text>Device Name</Text>
+        <Text>Device 1</Text>
         <Switch
           trackColor={{false: '#767577', true: '#81b0ff'}}
           thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}

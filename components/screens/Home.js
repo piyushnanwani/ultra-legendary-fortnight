@@ -7,12 +7,91 @@ import {
   Button,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import DeviceDashboard from '../DeviceDashboard';
 import GlobalStyles from '../GlobalStyles';
+import {AuthContext} from '../../App';
 
 export default function Home({navigation}) {
+  const {getCurrentUser2} = React.useContext(AuthContext);
+
+  const [isLoading, setLoading] = useState(true);
+
+  const [userId, setUserId] = useState('');
+  // const [deviceId, setDeviceId] = useState('');
+
+  const [user, setUser] = useState({});
+  const [device, setDevice] = useState({});
+
   const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
+
+  useEffect(() => {
+    getCurrentUser2()
+      .then((response) => {
+        setUser(response.user);
+        let emailStr = response.user.email;
+        let userIdStr = emailStr.slice(0, emailStr.indexOf('@'));
+        console.log(emailStr);
+        console.log(userIdStr);
+        /* extracting userId from emailId */
+        setUserId(userIdStr);
+        console.log('response 1');
+        return userIdStr;
+      })
+      .then((userIdStr) => {
+        return fetch('http://192.168.29.190:3000' + '/users/' + userIdStr).then(
+          (userResponse) => {
+            console.log('response 2');
+            console.log(userResponse);
+            return userIdStr;
+          },
+        );
+      })
+      .then((userIdStr) => {
+        fetch('http://192.168.29.190:3000' + '/devices/' + userIdStr, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((deviceResponse) => {
+            return deviceResponse.json();
+
+            // // this means device is registered and we have got device details
+            // if (deviceResponse.status == 200) {
+            //   console.log(deviceResponse);
+            // }
+          })
+          .then((res) => {
+            setIsDeviceRegistered(true);
+            setDevice(res);
+            console.log(res);
+          });
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // useEffect(() => {
+  //   // get user id from google sign in and setState => fetch that user from APi if not present POST
+
+  // }, []);
+  // useEffect(() => {
+  //   // check if user is registered or not
+  //   // if yes load user data and device data
+  //   fetch('http://localhost:3000/users/pnanwani61')
+  //     .then((response) => {
+  //       response.json()
+  //     })
+  //     .then((json) => {
+  //       setUser(json.movies)
+  //     })
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+
+  // }, []);
   // useEffect(() => {
   //   // 1. api call to check if any device registered with this user or not
   //   if (true) {
@@ -22,7 +101,11 @@ export default function Home({navigation}) {
   //   // if yes, load device dashboard with data from api
   //   // if not, button to add device (i.e load default screen)
   // }, []);
-  return isDeviceRegistered == false ? (
+  return isLoading == true ? (
+    <View style={{flex: 1}}>
+      <ActivityIndicator />
+    </View>
+  ) : isDeviceRegistered == false ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <Button
         title="Toggle Device register behavior"
@@ -70,7 +153,7 @@ export default function Home({navigation}) {
       <Button
         title="Toggle Device register behavior"
         onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button>
-      <DeviceDashboard style={styles.deviceDashboard} />
+      <DeviceDashboard style={styles.deviceDashboard} deviceData={device} />
       {/* Bottom Dock */}
 
       <View style={styles.dock}>

@@ -21,6 +21,8 @@ export default function Home({navigation}) {
 
   const [isLoading, setLoading] = useState(true);
 
+  const [apiJwtToken, setApiJwtToken] = useState('');
+
   const [userId, setUserId] = useState('');
   // const [deviceId, setDeviceId] = useState('');
 
@@ -190,6 +192,7 @@ export default function Home({navigation}) {
                   Alert.alert('Error! try again!');
                 }
                 if (jwtToken != '') {
+                  setApiJwtToken(jwtToken); // first set token
                   // means user logged in and we have token
                   getSetUserDeviceFromAPI(jwtToken, userId).then(
                     ({res, status, userId}) => {
@@ -291,7 +294,12 @@ export default function Home({navigation}) {
         <Button
           style={styles.addDeviceBtn}
           title="Add device"
-          onPress={() => navigation.navigate('AddDevice')}></Button>
+          onPress={() =>
+            navigation.navigate('AddDevice', {
+              userId: userId,
+              token: apiJwtToken,
+            })
+          }></Button>
       </View>
 
       <View style={styles.dock}>

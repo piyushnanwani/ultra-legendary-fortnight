@@ -8,6 +8,7 @@ import {
   StyleSheet,
   PermissionsAndroid,
 } from 'react-native';
+import {event} from 'react-native-reanimated';
 
 export default class MasterForm extends React.Component {
   constructor(props) {
@@ -20,11 +21,22 @@ export default class MasterForm extends React.Component {
     };
   }
 
-  handleChange = (event) => {
-    const {name, value} = event.target;
-    this.setState({
-      [name]: value,
-    });
+  handleChange = (eventData) => {
+    if (eventData.wifiName) {
+      this.setState({
+        wifiName: eventData.wifiName,
+      });
+    } else if (eventData.wifiPassword) {
+      this.setState({
+        wifiPassword: eventData.wifiPassword,
+      });
+    }
+    // console.log(event);
+    // console.log('This handle change function called!');
+    // const {name, value} = event.target;
+    // this.setState({
+    //   [name]: value,
+    // });
   };
 
   handleSubmit = (event) => {
@@ -37,11 +49,30 @@ export default class MasterForm extends React.Component {
   };
 
   _next = () => {
+    const {email, wifiName, wifiPassword} = this.state;
+    console.log(this.state);
     let currentStep = this.state.currentStep;
     if (currentStep == 3) {
-      const {navigation} = this.props;
-      requestBluetoothLocationPermission();
-      navigation.navigate('AddingDevice');
+      console.log('printing state value in step 3 ');
+      console.log(this.state);
+      const {navigation, userIdNtoken} = this.props;
+      console.log('Adding Device being called here!');
+      console.log(userIdNtoken);
+      console.log(userIdNtoken.userId);
+      requestBluetoothLocationPermission().then(() => {
+        navigation.navigate(
+          'AddingDevice',
+          {
+            userId: userIdNtoken.userId,
+            wifiName,
+            wifiPassword,
+            token: userIdNtoken.token,
+          },
+          // {
+          //   credentials: [wifiName, wifiPassword, email],
+          // }
+        ); // wifiName, wifiPassword, userId, token
+      });
     }
 
     currentStep = currentStep >= 2 ? 3 : currentStep + 1;
@@ -65,7 +96,7 @@ export default class MasterForm extends React.Component {
 
         <Step1
           currentStep={this.state.currentStep}
-          handleChange={this.handleChange}
+          // handleChange={this.handleChange}
           email={this.state.email}
         />
         <Step2
@@ -76,7 +107,7 @@ export default class MasterForm extends React.Component {
         />
         <Step3
           currentStep={this.state.currentStep}
-          handleChange={this.handleChange}
+          // handleChange={this.handleChange}
         />
         <View style={[styles.btnView]}>
           <Button
@@ -118,8 +149,9 @@ function Step2(props) {
   if (props.currentStep !== 2) {
     return null;
   }
-  const [wifiName, setWifiName] = useState('Enter WiFi Name');
-  const [wifiPassword, setWifiPassword] = useState('Enter Password');
+  const [wifiName, setWifiName] = useState('');
+  const [wifiPassword, setWifiPassword] = useState('');
+  console.log(props);
   return (
     <View style={styles.stepStyle}>
       <Text>
@@ -136,10 +168,11 @@ function Step2(props) {
         }}
         placeholder="Enter WiFi Name"
         value={props.wifiName}
-        onFocus={() => {
-          if (wifiName == 'Enter WiFi Name') setWifiName('');
+        onChangeText={(text) => {
+          setWifiName(text);
+          props.handleChange({wifiName: text});
         }}
-        onChangeText={(text) => setWifiName(text)}
+        // onChange={(event) => props.handleChange(event)}
         value={wifiName}
       />
 
@@ -153,10 +186,10 @@ function Step2(props) {
         placeholder="Enter password"
         value={props.wifiPassword}
         secureTextEntry={true}
-        onFocus={() => {
-          if (wifiPassword == 'Enter password') setWifiPassword('');
+        onChangeText={(text) => {
+          setWifiPassword(text);
+          props.handleChange({wifiPassword: text});
         }}
-        onChangeText={(text) => setWifiPassword(text)}
         value={wifiPassword}
       />
     </View>

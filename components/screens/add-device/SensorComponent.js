@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {BleManager} from 'react-native-ble-plx';
 import {Buffer} from 'buffer';
+import secrets from '../../../sercrets';
 
 export default class SensorsComponent extends Component {
   constructor() {
@@ -68,7 +69,7 @@ export default class SensorsComponent extends Component {
           })
           .then((device) => {
             this.info('Writing credentials to device');
-            return this.writeCredentials(device);
+            return this.writeCredentials(device, this.props.dataToESP32);
           })
           .then(
             (response) => {
@@ -89,21 +90,75 @@ export default class SensorsComponent extends Component {
     });
   }
 
-  async writeCredentials(device) {
-    let strArr = ['wifi=Paradise', 'pass=innovation.', 'mail=pnanwani61'];
+  async writeCredentials(device, dataToESP32) {
+    /*  */
+    console.log('wifi credentials , userId, token: ');
+    console.log(dataToESP32);
+    // console.log(props.params);
+    let strArr = [
+      `userId=${dataToESP32.userId}`,
+      `jwt=${dataToESP32.token}`,
+      `wifi=${dataToESP32.wifiName}`,
+      `pass=${dataToESP32.wifiPassword}`,
+    ];
 
     for (const str in strArr) {
       console.log(strArr[str]);
-      // UTF8 input string
-      let binaryData = Buffer.from(strArr[str], 'utf8');
 
-      // decode buffer as base64
-      let base64Data = binaryData.toString('base64');
-      const response = await device.writeCharacteristicWithResponseForService(
-        '6E400001-B5A3-F393-E0A9-E50E24DCCA9E',
-        '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
-        base64Data,
-      );
+      // jwt string: SPECIAL CASE , break down and send
+      if (strArr[str].slice(0, 3) == 'jwt') {
+        let totalCharsSendingAtOnce = 16; // 20 total includeing 'jwt='
+        let startIndex = 4;
+        let endIndex = 21; // endIndex is not included
+        let tokenLengthStr = 16;
+        let actualLongTokenStr = strArr[str].substr(4);
+
+        let totalIterationsOfLoop = actualLongTokenStr.length / 16;
+
+        // send batch of 16 , remove these 16 and then other batch
+        // of 16 till last
+        for (let i = 1; i <= Math.floor(totalIterationsOfLoop); i++) {
+          let shortToken = actualLongTokenStr.substr(0, 16);
+          actualLongTokenStr = actualLongTokenStr.substr(16);
+          // UTF8 input string
+          let binaryData = Buffer.from('jwt=' + shortToken, 'utf8');
+
+          // decode buffer as base64
+          let base64Data = binaryData.toString('base64');
+          const response = await device.writeCharacteristicWithResponseForService(
+            secrets.ESP32_BLE_SERVICE_UUID,
+            secrets.ESP32_BLE_CHARACTERISTIC_WRITE_UUID,
+            base64Data,
+          );
+        }
+
+        if (totalIterationsOfLoop - Math.floor(totalIterationsOfLoop) > 0) {
+          // send left chars
+          let shortToken = actualLongTokenStr.substr(0, 16);
+          actualLongTokenStr = actualLongTokenStr.substr(16);
+          // UTF8 input string
+          let binaryData = Buffer.from('jwt=' + shortToken, 'utf8');
+
+          // decode buffer as base64
+          let base64Data = binaryData.toString('base64');
+          const response = await device.writeCharacteristicWithResponseForService(
+            secrets.ESP32_BLE_SERVICE_UUID,
+            secrets.ESP32_BLE_CHARACTERISTIC_WRITE_UUID,
+            base64Data,
+          );
+        }
+      } else {
+        // UTF8 input string
+        let binaryData = Buffer.from(strArr[str], 'utf8');
+
+        // decode buffer as base64
+        let base64Data = binaryData.toString('base64');
+        const response = await device.writeCharacteristicWithResponseForService(
+          secrets.ESP32_BLE_SERVICE_UUID,
+          secrets.ESP32_BLE_CHARACTERISTIC_WRITE_UUID,
+          base64Data,
+        );
+      }
     }
     // let str = 'mail=bhalobhashi';
     // create buffer from string

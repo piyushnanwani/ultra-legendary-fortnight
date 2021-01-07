@@ -10,7 +10,14 @@ import {
 } from 'react-native';
 import SensorComponent from './SensorComponent';
 
-export default function AddingDevice({navigation}) {
+export default function AddingDevice({navigation, route}) {
+  /* 2. Get the param */
+  const {userId, wifiName, wifiPassword, token} = route.params;
+  console.log(userId);
+  console.log(wifiName);
+  console.log(wifiPassword);
+  console.log(token);
+  console.log('recieved the params');
   return (
     <View style={styles.container}>
       <Button
@@ -24,7 +31,7 @@ export default function AddingDevice({navigation}) {
         <Text style={{textAlign: 'center', flex: 1, paddingTop: 20}}>
           Ensure that the Wifi signal is good and you are near your device
         </Text>
-        <SensorComponent navigation={navigation} />
+        <SensorComponent navigation={navigation} dataToESP32={route.params} />
       </View>
     </View>
   );

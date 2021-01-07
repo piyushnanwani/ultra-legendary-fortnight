@@ -1,5 +1,5 @@
-import "react-native-gesture-handler";
-import React, { useState } from "react";
+import 'react-native-gesture-handler';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,21 +8,23 @@ import {
   Button,
   TouchableOpacity,
   SafeAreaView,
-} from "react-native";
+} from 'react-native';
 
-import MasterForm from "./MasterForm";
-import GlobalStyles from "../../GlobalStyles";
+import MasterForm from './MasterForm';
+import GlobalStyles from '../../GlobalStyles';
 
-export default function AddDevice({ navigation }) {
+export default function AddDevice({navigation, route}) {
+  const {userId, token} = route.params;
+  console.log('AddDevice !');
+  console.log([userId, token]);
   return (
     <SafeAreaView style={[styles.container]}>
       <Button
         title="Cancel"
-        style={{ flex: 1, paddingRight: 40 }}
-        onPress={() => navigation.navigate("Home")}
-      ></Button>
+        style={{flex: 1, paddingRight: 40}}
+        onPress={() => navigation.navigate('Home')}></Button>
       <View style={styles.subContainer}>
-        <MasterForm navigation={navigation} />
+        <MasterForm navigation={navigation} userIdNtoken={{userId, token}} />
       </View>
     </SafeAreaView>
   );
@@ -34,21 +36,21 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
     paddingBottom: 20,
-    backgroundColor: "#ddd",
+    backgroundColor: '#ddd',
   },
   subContainer: {
     marginTop: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     flex: 1,
     // justifyContent: "flex-end",
-    justifyContent: "space-around",
-    flexDirection: "column",
+    justifyContent: 'space-around',
+    flexDirection: 'column',
     borderRadius: 20,
   },
   btnView: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     maxHeight: 30,
   },
 });

@@ -56,6 +56,7 @@ export default function Profile({navigation}) {
           style={styles.signOutBtn}
           title="Sign out"
           onPress={() => {
+            navigation.goBack();
             signOut();
           }}></Button>
       </View>

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import DeviceDashboard from '../DeviceDashboard';
 import GlobalStyles from '../GlobalStyles';
@@ -28,72 +29,216 @@ export default function Home({navigation}) {
 
   const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
 
+  const getSetGoogleUser = async () => {
+    const currentUser = await getCurrentUser2();
+    setUser(await currentUser.user);
+    // console.log(currentUser);
+
+    let emailStr = await currentUser.user.email;
+    let userIdStr = await emailStr.slice(0, await emailStr.indexOf('@'));
+    setUserId(await userIdStr);
+    return {
+      user: await currentUser.user,
+      userId: await currentUser.user.email.slice(
+        0,
+        await currentUser.user.email.indexOf('@'),
+      ),
+    };
+  };
+  // const getSetGoogleUserId = async () => {
+  //   const response = await user;
+  //   /* extracting userId from emailId */
+  //   let emailStr = await response.email;
+  //   let userIdStr = await emailStr.slice(0, await emailStr.indexOf('@'));
+  //   setUserId(await userIdStr);
+  // };
+
+  const regsiterUserToAPI = async (user, userId) => {
+    const userPOST = {
+      userId: userId,
+      password: secrets.CLIENT_API_PASS,
+      email: user.email,
+      firstName: user.givenName,
+      lastName: user.familyName,
+      imageUrl: user.photo,
+    };
+    console.log('registering user to API!');
+    console.log(userPOST);
+    console.log(user);
+
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(userPOST),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    return await fetch(secrets.API_URL + '/users/register', options).then(
+      function (res) {
+        console.log(res.status);
+        return {res: res.json(), status: res.status, user, userId};
+      },
+    );
+  };
+
+  const loginUserToAPI = async (user, userId) => {
+    const userPOST = {
+      userId: userId,
+      password: secrets.CLIENT_API_PASS,
+    };
+    console.log('logging user to API here!');
+    console.log(user);
+    console.log(userPOST);
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(userPOST),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    return await fetch(secrets.API_URL + '/users/authenticate', options).then(
+      async function (res) {
+        return {res: await res.json(), status: res.status, user, userId};
+      },
+    );
+  };
+
+  const getSetUserDeviceFromAPI = async (jwtToken, userId) => {
+    console.log('getting device registered with this user from API!');
+    console.log(jwtToken);
+    console.log('reminder!  set jwt toten as global state, use context!');
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
+
+    return await fetch(secrets.API_URL + `/devices/${userId}`, options).then(
+      async function (res) {
+        return {res: await res.json(), status: res.status, userId};
+      },
+    );
+  };
+  const userSetup = async () => {
+    const response = await loginUserToAPI();
+    // const responseJSON = await response.json();
+    console.log(response);
+    // let jwtToken = await responseJSON.token;
+
+    // if (responseJSON.status == 400) {
+    //   // register user
+    //   const responseOnRegister = await regsiterUserToAPI();
+    //   const responseOnRegisterJSON = await responseOnRegister.json();
+
+    //   // now login
+    //   const responseOnLogin = await loginUserToAPI();
+    //   const responseOnLoginJSON = await responseOnLogin.json();
+
+    //   jwtToken = await responseOnLoginJSON.token;
+    // }
+
+    // // now get UserDevice from API
+    // // 1. set device details 2. set isregistered to true
+    // const responseOnDevice = await getSetUserDeviceFromAPI(jwtToken);
+  };
+
   useEffect(() => {
-    getCurrentUser2()
-      .then((response) => {
-        setUser(response.user);
-        let emailStr = response.user.email;
-        let userIdStr = emailStr.slice(0, emailStr.indexOf('@'));
-        console.log(emailStr);
-        console.log(userIdStr);
-        /* extracting userId from emailId */
-        setUserId(userIdStr);
-        console.log('response 1');
-        return userIdStr;
-      })
-      // 1 authenticate => get bearer token
-      // 2 PUT /users
-      // 3 GET /devices/userId => if it exists then display Device dashboard
-      .then((userIdStr) => {
-        const user = {
-          userId: userIdStr,
-          password: secrets.CLIENT_API_PASS,
-        };
-        console.log(user);
-
-        const options = {
-          method: 'POST',
-          body: JSON.stringify(user),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        };
-
-        // fetch('https://reqres.in/api/users', options)
-        //   .then((res) => res.json())
-        //   .then((res) => console.log(res));
-
-        return fetch(
-          secrets.API_URL + '/users/authenticate',
-          options,
-        ).then((res) => res.json());
-      })
-      .then((res) => console.log(res))
-      // .then((userIdStr) => {
-      //   fetch(secrets.API_URL + '/devices/' + userIdStr, {
-      //     method: 'GET',
-      //     headers: {
-      //       Accept: 'application/json',
-      //       'Content-Type': 'application/json',
-      //     },
-      //   })
-      //     .then((deviceResponse) => {
-      //       return deviceResponse.json();
-
-      //       // // this means device is registered and we have got device details
-      //       // if (deviceResponse.status == 200) {
-      //       //   console.log(deviceResponse);
-      //       // }
-      //     })
-      //     .then((res) => {
-      //       setIsDeviceRegistered(true);
-      //       setDevice(res);
-      //       console.log(res);
-      //     });
-      // })
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+    try {
+      (() => {
+        console.log('1');
+        getSetGoogleUser()
+          .then(({user, userId}) => {
+            console.log('2');
+            console.log(user);
+            console.log(userId);
+            let jwtToken = '';
+            // loginUserToAPI('pnanwani61', userId).then(({res, status, user, userId}) => {
+            loginUserToAPI(user, userId).then(
+              async ({res, status, user, userId}) => {
+                console.log('3');
+                console.log(res);
+                console.log(status);
+                console.log(user);
+                console.log(userId);
+                if (status == 400) {
+                  console.log('4');
+                  regsiterUserToAPI(user, userId).then(
+                    ({res, status, user, userId}) => {
+                      console.log('5');
+                      if (status == 200) {
+                        console.log('6');
+                        loginUserToAPI(user, userId).then(
+                          async ({res, status, user, userId}) => {
+                            console.log('7');
+                            console.log(res);
+                            console.log(status);
+                            jwtToken = await res.token;
+                          },
+                        );
+                      }
+                    },
+                  );
+                } else if (status == 200) {
+                  console.log('8');
+                  console.log(res);
+                  jwtToken = await res.token;
+                } else {
+                  Alert.alert('Error! try again!');
+                }
+                if (jwtToken != '') {
+                  // means user logged in and we have token
+                  getSetUserDeviceFromAPI(jwtToken, userId).then(
+                    ({res, status, userId}) => {
+                      // some device is registered with this user
+                      if (status == 200) {
+                        console.log('Details of registered device!');
+                        console.log(res);
+                        setDevice(res);
+                        setIsDeviceRegistered(true);
+                        console.log(device);
+                        console.log(
+                          'Now load device dasboard with above info and control',
+                        );
+                      } else {
+                        console.log('No device registered with this user!');
+                      }
+                      /* Now Loading is done */
+                      setLoading(false);
+                    },
+                  );
+                }
+              },
+            );
+          })
+          .then(() => {
+            console.log('Hulara hjkashdkjashd');
+            // setLoading(false);
+          });
+      })();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      console.log('hello , finally finally called!!!!!!!');
+    }
   }, []);
+  // useEffect(() => {
+  //   try {
+  //     console.log('jinga laa ');
+  //     // console.log('6');
+  //     // console.log(userId);
+  //     // console.log(user);
+  //     // console.log('7');
+  //     // userSetup();
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
 
   // useEffect(() => {
   //   // get user id from google sign in and setState => fetch that user from APi if not present POST
@@ -123,14 +268,16 @@ export default function Home({navigation}) {
   //   // if not, button to add device (i.e load default screen)
   // }, []);
   return isLoading == true ? (
-    <View style={{flex: 1}}>
-      <ActivityIndicator />
-    </View>
+    <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    </SafeAreaView>
   ) : isDeviceRegistered == false ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
-      <Button
+      {/* <Button
         title="Toggle Device register behavior"
-        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button>
+        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button> */}
       <View style={styles.imgView}>
         <Image
           style={styles.cloudImg}
@@ -171,9 +318,9 @@ export default function Home({navigation}) {
     </SafeAreaView>
   ) : (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
-      <Button
+      {/*       <Button
         title="Toggle Device register behavior"
-        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button>
+        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button> */}
       <DeviceDashboard style={styles.deviceDashboard} deviceData={device} />
       {/* Bottom Dock */}
 

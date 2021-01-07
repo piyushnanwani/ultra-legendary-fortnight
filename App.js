@@ -104,7 +104,7 @@ export default function App({navigation}) {
         try {
           await GoogleSignin.hasPlayServices();
           userInfoTmp = await GoogleSignin.signIn();
-          console.log(user);
+          // console.log(user);
           setUser(userInfoTmp);
         } catch (error) {
           console.log(error);

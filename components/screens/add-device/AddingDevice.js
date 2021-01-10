@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer'
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -7,6 +8,7 @@ import {
   Text,
   Button,
   TouchableOpacity,
+  Animated
 } from 'react-native';
 import SensorComponent from './SensorComponent';
 
@@ -35,6 +37,25 @@ export default function AddingDevice({navigation, route}) {
         <Text style={{textAlign: 'center', flex: 1, padding: 20}}>
           Ensure that the Wifi signal is good and you are near your device
         </Text>
+        <View style={{flex: 0.75, alignItems: 'center'}} >
+
+        <CountdownCircleTimer
+    isPlaying
+    duration={60}
+    size={80}
+    colors={[
+      ['#004777', 0.4],
+      ['#F7B801', 0.4],
+      ['#A30000', 0.2],
+    ]}
+  >
+    {({ remainingTime, animatedColor }) => (
+      <Animated.Text style={{ color: animatedColor }}>
+        {remainingTime}
+      </Animated.Text>
+    )}
+  </CountdownCircleTimer>
+        </View>
         <SensorComponent navigation={navigation} dataToESP32={route.params} />
       </View>
     </View>
@@ -58,4 +79,5 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: 20,
   },
+  remainingTime: {}
 });

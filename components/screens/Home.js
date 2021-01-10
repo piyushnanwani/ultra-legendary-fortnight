@@ -19,7 +19,7 @@ export default function Home({navigation}) {
   const {getCurrentUser2} = React.useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(true);
-
+  
   const [apiJwtToken, setApiJwtToken] = useState('');
 
   const [userId, setUserId] = useState('');
@@ -119,6 +119,7 @@ export default function Home({navigation}) {
   useEffect(() => {
     try {
       (() => {
+        navigation.addListener('focus', () => loadRegisteredDevice());
         console.log('1');
         getSetGoogleUser()
           .then(({user, userId}) => {
@@ -193,6 +194,34 @@ export default function Home({navigation}) {
     }
   }, []);
   
+  const loadRegisteredDevice = (async () => {
+    console.log('inside load resgistered device function!');
+    console.log(apiJwtToken);
+    console.log(userId);
+    
+    if (apiJwtToken != '') {
+      setLoading(true);
+      console.log(apiJwtToken);
+      console.log(userId);
+      await getSetUserDeviceFromAPI(apiJwtToken, userId).then(
+        ({res, status, userId}) => {
+          if (status == 200) {
+            console.log('Details of registered device!');
+            console.log(res);
+            setDevice(res);
+            setIsDeviceRegistered(true);
+            console.log(device);
+            console.log(
+              'Now load device dasboard with above info and control',
+            );
+          } else {
+            console.log('No device registered with this user!');
+          }
+          setLoading(false);
+        },
+      );
+    }
+  })
   return isLoading == true ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={{flex: 1, justifyContent: 'center'}}>

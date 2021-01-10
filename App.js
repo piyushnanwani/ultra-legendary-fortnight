@@ -9,11 +9,7 @@ import {
   statusCodes,
 } from '@react-native-community/google-signin';
 
-import SignInScreen from './components/screens/SignInScreen';
-import Home from './components/screens/Home';
-import Profile from './components/screens/Profile';
-import AddDevice from './components/screens/add-device/AddDevice';
-import AddingDevice from './components/screens/add-device/AddingDevice';
+import {SignInScreen, Home, Profile, AddDevice, AddingDevice} from './components/screens';
 import sercrets from './sercrets';
 
 export const AuthContext = React.createContext();
@@ -26,7 +22,6 @@ function SplashScreen() {
         color="black"
         style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
       />
-      {/* <Text>Loading okay...</Text> */}
     </View>
   );
 }

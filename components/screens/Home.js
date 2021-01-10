@@ -10,8 +10,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import DeviceDashboard from '../DeviceDashboard';
-import GlobalStyles from '../GlobalStyles';
+import {DeviceDashboard, GlobalStyles} from '../../components';
 import {AuthContext} from '../../App';
 
 import secrets from '../../sercrets';
@@ -24,7 +23,6 @@ export default function Home({navigation}) {
   const [apiJwtToken, setApiJwtToken] = useState('');
 
   const [userId, setUserId] = useState('');
-  // const [deviceId, setDeviceId] = useState('');
 
   const [user, setUser] = useState({});
   const [device, setDevice] = useState({});
@@ -34,7 +32,6 @@ export default function Home({navigation}) {
   const getSetGoogleUser = async () => {
     const currentUser = await getCurrentUser2();
     setUser(await currentUser.user);
-    // console.log(currentUser);
 
     let emailStr = await currentUser.user.email;
     let userIdStr = await emailStr.slice(0, await emailStr.indexOf('@'));
@@ -47,13 +44,6 @@ export default function Home({navigation}) {
       ),
     };
   };
-  // const getSetGoogleUserId = async () => {
-  //   const response = await user;
-  //   /* extracting userId from emailId */
-  //   let emailStr = await response.email;
-  //   let userIdStr = await emailStr.slice(0, await emailStr.indexOf('@'));
-  //   setUserId(await userIdStr);
-  // };
 
   const regsiterUserToAPI = async (user, userId) => {
     const userPOST = {
@@ -125,28 +115,6 @@ export default function Home({navigation}) {
       },
     );
   };
-  const userSetup = async () => {
-    const response = await loginUserToAPI();
-    // const responseJSON = await response.json();
-    console.log(response);
-    // let jwtToken = await responseJSON.token;
-
-    // if (responseJSON.status == 400) {
-    //   // register user
-    //   const responseOnRegister = await regsiterUserToAPI();
-    //   const responseOnRegisterJSON = await responseOnRegister.json();
-
-    //   // now login
-    //   const responseOnLogin = await loginUserToAPI();
-    //   const responseOnLoginJSON = await responseOnLogin.json();
-
-    //   jwtToken = await responseOnLoginJSON.token;
-    // }
-
-    // // now get UserDevice from API
-    // // 1. set device details 2. set isregistered to true
-    // const responseOnDevice = await getSetUserDeviceFromAPI(jwtToken);
-  };
 
   useEffect(() => {
     try {
@@ -217,59 +185,14 @@ export default function Home({navigation}) {
               },
             );
           })
-          .then(() => {
-            console.log('Hulara hjkashdkjashd');
-            // setLoading(false);
-          });
       })();
     } catch (err) {
       console.error(err);
     } finally {
-      console.log('hello , finally finally called!!!!!!!');
+      console.log('finally called!!!!!!!');
     }
   }, []);
-  // useEffect(() => {
-  //   try {
-  //     console.log('jinga laa ');
-  //     // console.log('6');
-  //     // console.log(userId);
-  //     // console.log(user);
-  //     // console.log('7');
-  //     // userSetup();
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   // get user id from google sign in and setState => fetch that user from APi if not present POST
-
-  // }, []);
-  // useEffect(() => {
-  //   // check if user is registered or not
-  //   // if yes load user data and device data
-  //   fetch('http://localhost:3000/users/pnanwani61')
-  //     .then((response) => {
-  //       response.json()
-  //     })
-  //     .then((json) => {
-  //       setUser(json.movies)
-  //     })
-  //     .catch((error) => console.error(error))
-  //     .finally(() => setLoading(false));
-
-  // }, []);
-  // useEffect(() => {
-  //   // 1. api call to check if any device registered with this user or not
-  //   if (true) {
-  //     setIsDeviceRegistered(true);
-  //   }
-
-  //   // if yes, load device dashboard with data from api
-  //   // if not, button to add device (i.e load default screen)
-  // }, []);
+  
   return isLoading == true ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={{flex: 1, justifyContent: 'center'}}>
@@ -326,11 +249,7 @@ export default function Home({navigation}) {
     </SafeAreaView>
   ) : (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
-      {/*       <Button
-        title="Toggle Device register behavior"
-        onPress={() => setIsDeviceRegistered(!isDeviceRegistered)}></Button> */}
       <DeviceDashboard style={styles.deviceDashboard} deviceData={device} />
-      {/* Bottom Dock */}
 
       <View style={styles.dock}>
         <View style={styles.navHome}>

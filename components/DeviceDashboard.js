@@ -2,31 +2,33 @@ import React, {useState, useEffect} from 'react';
 import {Text, View, Switch, Button, Alert} from 'react-native';
 
 const mqttFunction = (state, deviceData) => {
-  console.log(deviceData);
-  let stateStr = state == true ? 'ON' : 'OFF';
-  var mqtt = require('@taoqf/react-native-mqtt');
-  var client = mqtt.connect(
-    deviceData.brokerUrl,
-    (opts = {
-      username: deviceData.brokerUserName,
-      password: deviceData.brokerPassword,
-    }),
-    // (opts = {username: 'morios', password: 'aio_fuXG44GKfB6d5aPqQEF3C8QwlDRo'}),
-  );
+  try {
+    let stateStr = state == true ? 'ON' : 'OFF';
+    var mqtt = require('@taoqf/react-native-mqtt');
+    var client = mqtt.connect(
+      `mqtt://${deviceData.brokerUrl}`,
+      {
+        username: deviceData.brokerUserName,
+        password: deviceData.brokerPassword,
+      },
+    );
 
-  client.on('connect', function () {
-    client.subscribe(deviceData.publishedTopic1, function (err) {
-      if (!err) {
-        client.publish(deviceData.subscribedTopic1, stateStr);
-      }
+    client.on('connect', function () {
+      client.subscribe(deviceData.subscribedTopic1, function (err) {
+        if (!err) {
+          client.publish(deviceData.subscribedTopic1, stateStr);
+        }
+      });
     });
-  });
 
-  client.on('message', function (topic, message) {
-    // message is Buffer
-    console.log(message.toString());
-    client.end();
-  });
+    client.on('message', function (topic, message) {
+      // message is Buffer
+      console.log(message.toString());
+      client.end();
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export default DeviceDashboard = ({deviceData}) => {
@@ -44,15 +46,18 @@ export default DeviceDashboard = ({deviceData}) => {
       <Button
         title="Connect to client"
         onPress={() => {
-          Alert.alert('update to client sent!');
           mqttFunction(isEnabled, deviceData);
-        }}></Button>
+          // mqttFunction2();
+          Alert.alert('update to client sent!');
+        }}
+      ></Button>
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginTop: 40,
-        }}>
+        }}
+      >
         <Text>Device 1</Text>
         <Switch
           trackColor={{false: '#767577', true: '#81b0ff'}}

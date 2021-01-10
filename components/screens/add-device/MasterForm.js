@@ -7,6 +7,10 @@ import {
   TextInput,
   StyleSheet,
   PermissionsAndroid,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform
 } from 'react-native';
 import {event} from 'react-native-reanimated';
 
@@ -31,12 +35,6 @@ export default class MasterForm extends React.Component {
         wifiPassword: eventData.wifiPassword,
       });
     }
-    // console.log(event);
-    // console.log('This handle change function called!');
-    // const {name, value} = event.target;
-    // this.setState({
-    //   [name]: value,
-    // });
   };
 
   handleSubmit = (event) => {
@@ -68,10 +66,7 @@ export default class MasterForm extends React.Component {
             wifiPassword,
             token: userIdNtoken.token,
           },
-          // {
-          //   credentials: [wifiName, wifiPassword, email],
-          // }
-        ); // wifiName, wifiPassword, userId, token
+        ); 
       });
     }
 
@@ -93,7 +88,7 @@ export default class MasterForm extends React.Component {
     return (
       <View style={styles.masterForm}>
         <Text style={styles.textStyle}>Reset the device</Text>
-
+        
         <Step1
           currentStep={this.state.currentStep}
           // handleChange={this.handleChange}
@@ -111,19 +106,20 @@ export default class MasterForm extends React.Component {
         />
         <View style={[styles.btnView]}>
           <Button
+            color="#9B0177"
+            disabled={this.state.currentStep==1? true: false}
             title="Back"
             onPress={() => {
               this._prev();
             }}
           />
           <Button
+            color ="#9B0177"
             title="Next"
             onPress={() => {
               this._next();
             }}
           />
-          {/* {this.previousButton()}
-          {this.nextButton()} */}
         </View>
       </View>
     );
@@ -137,7 +133,7 @@ function Step1(props) {
 
   return (
     <View style={styles.stepStyle}>
-      <Text>
+      <Text style={styles.instructionSteps}>
         Step 1: {'\n\n'}
         Power on the device after it has been powered off for 10s
       </Text>
@@ -153,19 +149,29 @@ function Step2(props) {
   const [wifiPassword, setWifiPassword] = useState('');
   console.log(props);
   return (
-    <View style={styles.stepStyle}>
-      <Text>
+ 
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios"? "padding": "height"}
+      style={styles.stepStyle}>
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+      >
+        <View style={styles.inner} >
+
+      <Text style={styles.instructionSteps} >
         Step 2: {'\n\n'}
         Enter your WiFi credentials {'\n'}
       </Text>
 
       <TextInput
-        style={{
-          height: 40,
-          borderColor: 'gray',
-          borderWidth: 1,
-          paddingLeft: 5,
-        }}
+style={styles.textInput}
+// style={{
+        //   height: 40,
+        //   borderColor: 'gray',
+        //   borderWidth: 1,
+        //   paddingLeft: 5,
+        //   marginBottom: 5
+        // }}
         placeholder="Enter WiFi Name"
         value={props.wifiName}
         onChangeText={(text) => {
@@ -177,12 +183,13 @@ function Step2(props) {
       />
 
       <TextInput
-        style={{
-          height: 40,
-          borderColor: 'gray',
-          borderWidth: 1,
-          paddingLeft: 5,
-        }}
+        style={styles.textInput}
+// style={{
+        //   height: 40,
+        //   borderColor: 'gray',
+        //   borderWidth: 1,
+        //   paddingLeft: 5,
+        // }}
         placeholder="Enter password"
         value={props.wifiPassword}
         secureTextEntry={true}
@@ -192,7 +199,9 @@ function Step2(props) {
         }}
         value={wifiPassword}
       />
-    </View>
+        </View>
+        </TouchableWithoutFeedback>  
+    </KeyboardAvoidingView >
   );
 }
 
@@ -202,9 +211,9 @@ function Step3(props) {
   }
   return (
     <View style={styles.stepStyle}>
-      <Text>
+      <Text style={styles.instructionSteps}>
         Step 3: {'\n\n'}
-        Turn on your Bluetooth and select your device {'\n'}
+          Turn on your bluetooth {'\n'}
       </Text>
     </View>
   );
@@ -221,14 +230,34 @@ const styles = StyleSheet.create({
   masterForm: {
     flex: 1,
     marginHorizontal: 20,
+    paddingBottom: 30
   },
   textStyle: {
     textAlign: 'center',
     flex: 1,
+    fontSize:16,
+    paddingTop: 20,
+    fontWeight: "700"
   },
   stepStyle: {
     paddingHorizontal: 50,
-    flex: 1,
+    flex: 2,
+  },
+  instructionSteps: {
+    color: '#504F4F'
+  },
+  inner: {
+    padding: 24,
+    flex: 2,
+    justifyContent: "flex-start",
+    alignItems: 'stretch',
+    padding: 20
+  },
+  textInput: {
+    height: 40,
+    borderColor: "#000000",
+    borderBottomWidth: 1,
+    marginBottom: 26
   },
 });
 

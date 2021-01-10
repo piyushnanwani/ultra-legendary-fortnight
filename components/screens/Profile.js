@@ -53,6 +53,7 @@ export default function Profile({navigation}) {
       {/* Sign Out */}
       <View style={styles.signOutBtnView}>
         <Button
+          color= "#9B0177"
           style={styles.signOutBtn}
           title="Sign out"
           onPress={() => {
@@ -107,9 +108,9 @@ const styles = StyleSheet.create({
   },
   userImg: {
     flex: 1.9,
-    width: 130,
-    height: 130,
-    borderRadius: 130 / 2,
+    width: 100,
+    height: 100,
+    borderRadius: 100 / 2,
   },
 
   userDetails: {

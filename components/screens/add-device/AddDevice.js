@@ -19,10 +19,14 @@ export default function AddDevice({navigation, route}) {
   console.log([userId, token]);
   return (
     <SafeAreaView style={[styles.container]}>
+      <View style={{flex:1, alignItems: 'flex-start'}} >
       <Button
+        color= "#9B0177"
         title="Cancel"
-        style={{flex: 1, paddingRight: 40}}
+        style={{flex: 1}}
         onPress={() => navigation.navigate('Home')}></Button>
+
+      </View>
       <View style={styles.subContainer}>
         <MasterForm navigation={navigation} userIdNtoken={{userId, token}} />
       </View>
@@ -41,9 +45,9 @@ const styles = StyleSheet.create({
   subContainer: {
     marginTop: 20,
     backgroundColor: '#fff',
-    flex: 1,
-    // justifyContent: "flex-end",
-    justifyContent: 'space-around',
+    flex: 10,
+    // justifyContent: "flex-start",
+    // justifyContent: 'space-around',
     flexDirection: 'column',
     borderRadius: 20,
   },

@@ -215,6 +215,8 @@ export default function Home({navigation}) {
       </View>
       <View style={styles.btnView}>
         <Button
+          color="#9B0177"
+
           style={styles.addDeviceBtn}
           title="Add device"
           onPress={() =>
@@ -314,8 +316,8 @@ const styles = StyleSheet.create({
     // flex: 1,
   },
   addDeviceBtn: {
-    maxHeight: 40,
-    maxWidth: 120,
+    // maxHeight: 40,
+    // maxWidth: 120,
     // fontSize: 24,
     // backgroundColor: "#9B0177",
     // backgroundColor: "black",

@@ -34,23 +34,29 @@ const mqttFunction = (state, deviceData) => {
 export default DeviceDashboard = ({deviceData}) => {
   // const [device, setDevice] = useState(deviceData);
   const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const toggleSwitch = () => {
+    mqttFunction(!isEnabled, deviceData);
+    setIsEnabled((previousState) => !previousState);
+
+  }
 
   // useEffect(() => {
   //   mqttFunction(isEnabled);
   // }, [isEnabled]);
   return (
     <View style={{flex: 5.8}}>
-      <Text style={{textAlign: 'center'}}>Device List</Text>
-      <Text>Control your devices from here!(Rate: 30/minute)</Text>
-      <Button
+      <Text style={{textAlign: 'center', fontSize: 16, fontWeight: "600", color: '#A82389'}}>Device List{'\n\n'}
+      (Rate: 30/minute)
+      </Text>
+      <Text></Text>
+      {/* <Button
         title="Connect to client"
         onPress={() => {
           mqttFunction(isEnabled, deviceData);
           // mqttFunction2();
           Alert.alert('update to client sent!');
         }}
-      ></Button>
+      ></Button> */}
       <View
         style={{
           flexDirection: 'row',

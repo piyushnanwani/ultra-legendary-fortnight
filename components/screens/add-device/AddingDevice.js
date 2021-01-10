@@ -20,15 +20,19 @@ export default function AddingDevice({navigation, route}) {
   console.log('recieved the params');
   return (
     <View style={styles.container}>
+      <View style={{flex:1, alignItems: 'flex-start'}} >
       <Button
+        color= "#9B0177"
         title="Cancel"
-        style={{flex: 1, paddingRight: 40}}
+        style={{flex: 1}}
         onPress={() => navigation.navigate('Home')}></Button>
+
+      </View>
       <View style={styles.subContainer}>
-        <Text style={{textAlign: 'center', flex: 1, paddingTop: 20}}>
+        <Text style={{textAlign: 'center', flex: 1, paddingTop: 20, fontSize:18, fontWeight: "700"}}>
           Adding device...
         </Text>
-        <Text style={{textAlign: 'center', flex: 1, paddingTop: 20}}>
+        <Text style={{textAlign: 'center', flex: 1, padding: 20}}>
           Ensure that the Wifi signal is good and you are near your device
         </Text>
         <SensorComponent navigation={navigation} dataToESP32={route.params} />
@@ -48,7 +52,7 @@ const styles = StyleSheet.create({
   subContainer: {
     marginTop: 20,
     backgroundColor: '#fff',
-    flex: 1,
+    flex: 10,
     // justifyContent: "flex-end",
     justifyContent: 'space-around',
     flexDirection: 'column',

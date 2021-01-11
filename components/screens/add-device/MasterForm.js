@@ -270,7 +270,9 @@ const requestBluetoothLocationPermission = async () => {
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log('You can use the Location');
     } else {
+      Alert.alert('We need these permissions to add the device')
       console.log('Location permission denied');
+      // requestBluetoothLocationPermission('')
     }
   } catch (err) {
     console.warn(err);

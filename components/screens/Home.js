@@ -100,7 +100,6 @@ export default function Home({navigation}) {
   const getSetUserDeviceFromAPI = async (jwtToken, userId) => {
     console.log('getting device registered with this user from API!');
     console.log(jwtToken);
-    console.log('reminder!  set jwt toten as global state, use context!');
     const options = {
       method: 'GET',
       headers: {
@@ -116,6 +115,33 @@ export default function Home({navigation}) {
     );
   };
 
+  const deleteUserDeviceFromAPI = async (jwtToken = apiJwtToken, user = userId) => {
+    console.log('delete device registered with this user from API & send MQTT message RST to broker(device subsribeed to this message and will initialize)!');
+    console.log(jwtToken);
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
+
+    return await fetch(secrets.API_URL + `/devices/${userId}`, options).then(
+      async function (res) {
+        return {res: await res.json(), status: res.status, userId};
+      },
+    );
+  }
+
+  const deleteDevice = async () => {
+    const response =  await deleteUserDeviceFromAPI();
+    console.log(response);
+    if (await response.status == 200 ) {
+      // now we have to do 2 things : 1) remove device from dashboard 2) send mqtt request in device dashboard so that ESP32 responds 
+      setDevice({});
+      setIsDeviceRegistered(false);
+    }
+  }
   useEffect(() => {
     try {
       (() => {
@@ -196,7 +222,7 @@ export default function Home({navigation}) {
   
   const loadRegisteredDevice = (async () => {
     console.log('inside load resgistered device function!');
-    console.log(apiJwtToken);
+    console.log(await apiJwtToken);
     console.log(userId);
     
     if (apiJwtToken != '') {
@@ -280,7 +306,7 @@ export default function Home({navigation}) {
     </SafeAreaView>
   ) : (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
-      <DeviceDashboard style={styles.deviceDashboard} deviceData={device} />
+      <DeviceDashboard style={styles.deviceDashboard} deviceData={device} deleteDeviceFunction={deleteDevice} />
 
       <View style={styles.dock}>
         <View style={styles.navHome}>

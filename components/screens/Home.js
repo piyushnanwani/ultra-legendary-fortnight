@@ -29,6 +29,8 @@ export default function Home({navigation}) {
 
   const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
 
+  const [isDeviceLoaded, setIsDeviceLoaded] = useState(false);
+
   const getSetGoogleUser = async () => {
     const currentUser = await getCurrentUser2();
     setUser(await currentUser.user);
@@ -140,6 +142,7 @@ export default function Home({navigation}) {
       // now we have to do 2 things : 1) remove device from dashboard 2) send mqtt request in device dashboard so that ESP32 responds 
       setDevice({});
       setIsDeviceRegistered(false);
+      setIsDeviceLoaded(false);
     }
   }
   useEffect(() => {
@@ -196,36 +199,38 @@ export default function Home({navigation}) {
     } finally {
       console.log('finally called!!!!!!!');
     }
-  }, []);
+  }, [isDeviceLoaded == true]);
   
-  const loadRegisteredDevice = (async () => {
-    console.log('inside load resgistered device function!');
-    console.log(await apiJwtToken);
-    console.log(userId);
+  const loadRegisteredDevice = ( ) => {
+    // setIsDeviceRegistered(true);
+    setIsDeviceLoaded(true);
+    // console.log('inside load resgistered device function!');
+    // console.log(apiJwtToken);
+    // console.log(userId);
     
-    if (apiJwtToken != '') {
-      setLoading(true);
-      console.log(apiJwtToken);
-      console.log(userId);
-      await getSetUserDeviceFromAPI(apiJwtToken, userId).then(
-        ({res, status, userId}) => {
-          if (status == 200) {
-            console.log('Details of registered device!');
-            console.log(res);
-            setDevice(res);
-            setIsDeviceRegistered(true);
-            console.log(device);
-            console.log(
-              'Now load device dasboard with above info and control',
-            );
-          } else {
-            console.log('No device registered with this user!');
-          }
-          setLoading(false);
-        },
-      );
-    }
-  })
+    // if (apiJwtToken != '') {
+    //   setLoading(true);
+    //   console.log(apiJwtToken);
+    //   console.log(userId);
+    //   await getSetUserDeviceFromAPI(apiJwtToken, userId).then(
+    //     ({res, status, userId}) => {
+    //       if (status == 200) {
+    //         console.log('Details of registered device!');
+    //         console.log(res);
+    //         setDevice(res);
+    //         setIsDeviceRegistered(true);
+    //         console.log(device);
+    //         console.log(
+    //           'Now load device dasboard with above info and control',
+    //         );
+    //       } else {
+    //         console.log('No device registered with this user!');
+    //       }
+    //       setLoading(false);
+    //     },
+    //   );
+    // }
+  }
   return isLoading == true ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={{flex: 1, justifyContent: 'center'}}>

@@ -50,7 +50,7 @@ export default class SensorsComponent extends Component {
           this.info('Failed to add device!');
           this.setModalVisible(true, 'Failed to add device!');
         // }
-      }, 30000)
+      }, 60000)
     }
   }
 
@@ -85,7 +85,7 @@ export default class SensorsComponent extends Component {
                   this.info('Device added successfully!');
                   this.props.setIsPlaying(false);
                   this.setModalVisible(true, 'Device added successfully');
-                }, 5000)
+                }, 10000)
               } else {
                 this.info('Failed to add device!');
                 this.setModalVisible(true, 'Failed to add device!');

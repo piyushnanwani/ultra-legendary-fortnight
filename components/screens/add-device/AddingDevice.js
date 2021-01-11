@@ -42,7 +42,7 @@ export default function AddingDevice({navigation, route}) {
 
         <CountdownCircleTimer
     isPlaying={isPlaying}
-    duration={30}
+    duration={60}
     size={80}
     colors={[
       ['#004777', 0.4],

@@ -45,6 +45,12 @@ export default class SensorsComponent extends Component {
       });
     } else {
       this.scanAndConnect();
+      setTimeout(()=> {
+        // if( this.props.IsPlaying == false ) {
+          this.info('Failed to add device!');
+          this.setModalVisible(true, 'Failed to add device!');
+        // }
+      }, 30000)
     }
   }
 
@@ -55,6 +61,7 @@ export default class SensorsComponent extends Component {
 
       if (error) {
         this.error(error.message);
+        this.setModalVisible(true, 'Failed to add device!');
         return;
       }
 
@@ -74,8 +81,11 @@ export default class SensorsComponent extends Component {
           .then(
             (response) => {
               if (response == 'success') {
-                this.info('Device added successfully!');
-                this.setModalVisible(true, 'Device added successfully');
+                setTimeout(()=> {
+                  this.info('Device added successfully!');
+                  this.props.setIsPlaying(false);
+                  this.setModalVisible(true, 'Device added successfully');
+                }, 5000)
               } else {
                 this.info('Failed to add device!');
                 this.setModalVisible(true, 'Failed to add device!');

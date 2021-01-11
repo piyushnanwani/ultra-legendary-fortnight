@@ -146,43 +146,28 @@ export default function Home({navigation}) {
     try {
       (() => {
         navigation.addListener('focus', () => loadRegisteredDevice());
-        console.log('1');
         getSetGoogleUser()
           .then(({user, userId}) => {
-            console.log('2');
-            console.log(user);
-            console.log(userId);
             let jwtToken = '';
-            // loginUserToAPI('pnanwani61', userId).then(({res, status, user, userId}) => {
+            setUserId(userId); // in case if not set by getSetGoogleUser 
             loginUserToAPI(user, userId).then(
               async ({res, status, user, userId}) => {
-                console.log('3');
-                console.log(res);
-                console.log(status);
-                console.log(user);
-                console.log(userId);
                 if (status == 400) {
-                  console.log('4');
                   regsiterUserToAPI(user, userId).then(
                     ({res, status, user, userId}) => {
-                      console.log('5');
                       if (status == 200) {
-                        console.log('6');
                         loginUserToAPI(user, userId).then(
                           async ({res, status, user, userId}) => {
-                            console.log('7');
-                            console.log(res);
-                            console.log(status);
                             jwtToken = await res.token;
+                            setApiJwtToken(jwtToken); // in case not set down
                           },
                         );
                       }
                     },
                   );
                 } else if (status == 200) {
-                  console.log('8');
-                  console.log(res);
                   jwtToken = await res.token;
+                  setApiJwtToken(jwtToken); // in case not set down
                 } else {
                   Alert.alert('Error! try again!');
                 }
@@ -193,18 +178,11 @@ export default function Home({navigation}) {
                     ({res, status, userId}) => {
                       // some device is registered with this user
                       if (status == 200) {
-                        console.log('Details of registered device!');
-                        console.log(res);
                         setDevice(res);
                         setIsDeviceRegistered(true);
-                        console.log(device);
-                        console.log(
-                          'Now load device dasboard with above info and control',
-                        );
                       } else {
                         console.log('No device registered with this user!');
                       }
-                      /* Now Loading is done */
                       setLoading(false);
                     },
                   );

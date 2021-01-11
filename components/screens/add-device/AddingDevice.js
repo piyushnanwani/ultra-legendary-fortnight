@@ -15,6 +15,7 @@ import SensorComponent from './SensorComponent';
 export default function AddingDevice({navigation, route}) {
   /* 2. Get the param */
   const {userId, wifiName, wifiPassword, token} = route.params;
+  const [isPlaying, setIsPlaying] = useState(true)
   console.log(userId);
   console.log(wifiName);
   console.log(wifiPassword);
@@ -40,8 +41,8 @@ export default function AddingDevice({navigation, route}) {
         <View style={{flex: 0.75, alignItems: 'center'}} >
 
         <CountdownCircleTimer
-    isPlaying
-    duration={60}
+    isPlaying={isPlaying}
+    duration={30}
     size={80}
     colors={[
       ['#004777', 0.4],
@@ -56,7 +57,7 @@ export default function AddingDevice({navigation, route}) {
     )}
   </CountdownCircleTimer>
         </View>
-        <SensorComponent navigation={navigation} dataToESP32={route.params} />
+        <SensorComponent navigation={navigation} dataToESP32={route.params} setIsPlaying={setIsPlaying} isPlaying={isPlaying} />
       </View>
     </View>
   );

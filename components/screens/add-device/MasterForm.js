@@ -69,6 +69,16 @@ export default class MasterForm extends React.Component {
         ); 
       });
     }
+    if( currentStep == 2) {
+      if (wifiName === '') {
+        Alert.alert('Please enter wifi name');
+        return;
+      } 
+      if (wifiPassword == '') {
+        Alert.alert('Please enter wifi password');
+        return;
+      }
+    }
 
     currentStep = currentStep >= 2 ? 3 : currentStep + 1;
     this.setState({
@@ -213,7 +223,7 @@ function Step3(props) {
     <View style={styles.stepStyle}>
       <Text style={styles.instructionSteps}>
         Step 3: {'\n\n'}
-          Turn on your bluetooth {'\n'}
+          Turn on your bluetooth and location{'\n'}
       </Text>
     </View>
   );

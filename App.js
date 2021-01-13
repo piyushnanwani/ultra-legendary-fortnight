@@ -9,7 +9,13 @@ import {
   statusCodes,
 } from '@react-native-community/google-signin';
 
-import {SignInScreen, Home, Profile, AddDevice, AddingDevice} from './components/screens';
+import {
+  SignInScreen,
+  Home,
+  Profile,
+  AddDevice,
+  AddingDevice,
+} from './components/screens';
 import sercrets from './sercrets';
 
 export const AuthContext = React.createContext();

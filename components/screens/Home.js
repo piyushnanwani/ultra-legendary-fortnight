@@ -4,7 +4,6 @@ import {
   View,
   Image,
   Text,
-  Button,
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
@@ -12,14 +11,14 @@ import {
 } from 'react-native';
 import {DeviceDashboard, GlobalStyles} from '../../components';
 import {AuthContext} from '../../App';
-
+import {Button} from 'react-native-paper';
 import secrets from '../../sercrets';
 
 export default function Home({navigation}) {
   const {getCurrentUser2} = React.useContext(AuthContext);
 
   const [isLoading, setLoading] = useState(true);
-  
+
   const [apiJwtToken, setApiJwtToken] = useState('');
 
   const [userId, setUserId] = useState('');
@@ -117,8 +116,13 @@ export default function Home({navigation}) {
     );
   };
 
-  const deleteUserDeviceFromAPI = async (jwtToken = apiJwtToken, user = userId) => {
-    console.log('delete device registered with this user from API & send MQTT message RST to broker(device subsribeed to this message and will initialize)!');
+  const deleteUserDeviceFromAPI = async (
+    jwtToken = apiJwtToken,
+    user = userId,
+  ) => {
+    console.log(
+      'delete device registered with this user from API & send MQTT message RST to broker(device subsribeed to this message and will initialize)!',
+    );
     console.log(jwtToken);
     const options = {
       method: 'DELETE',
@@ -133,66 +137,65 @@ export default function Home({navigation}) {
         return {res: await res.json(), status: res.status, userId};
       },
     );
-  }
+  };
 
   const deleteDevice = async () => {
-    const response =  await deleteUserDeviceFromAPI();
+    const response = await deleteUserDeviceFromAPI();
     console.log(response);
-    if (await response.status == 200 ) {
-      // now we have to do 2 things : 1) remove device from dashboard 2) send mqtt request in device dashboard so that ESP32 responds 
+    if ((await response.status) == 200) {
+      // now we have to do 2 things : 1) remove device from dashboard 2) send mqtt request in device dashboard so that ESP32 responds
       setDevice({});
       setIsDeviceRegistered(false);
       setIsDeviceLoaded(false);
     }
-  }
+  };
   useEffect(() => {
     try {
       (() => {
         navigation.addListener('focus', () => loadRegisteredDevice());
-        getSetGoogleUser()
-          .then(({user, userId}) => {
-            let jwtToken = '';
-            setUserId(userId); // in case if not set by getSetGoogleUser 
-            loginUserToAPI(user, userId).then(
-              async ({res, status, user, userId}) => {
-                if (status == 400) {
-                  regsiterUserToAPI(user, userId).then(
-                    ({res, status, user, userId}) => {
-                      if (status == 200) {
-                        loginUserToAPI(user, userId).then(
-                          async ({res, status, user, userId}) => {
-                            jwtToken = await res.token;
-                            setApiJwtToken(jwtToken); // in case not set down
-                          },
-                        );
-                      }
-                    },
-                  );
-                } else if (status == 200) {
-                  jwtToken = await res.token;
-                  setApiJwtToken(jwtToken); // in case not set down
-                } else {
-                  Alert.alert('Error! try again!');
-                }
-                if (jwtToken != '') {
-                  setApiJwtToken(jwtToken); // first set token
-                  // means user logged in and we have token
-                  getSetUserDeviceFromAPI(jwtToken, userId).then(
-                    ({res, status, userId}) => {
-                      // some device is registered with this user
-                      if (status == 200) {
-                        setDevice(res);
-                        setIsDeviceRegistered(true);
-                      } else {
-                        console.log('No device registered with this user!');
-                      }
-                      setLoading(false);
-                    },
-                  );
-                }
-              },
-            );
-          })
+        getSetGoogleUser().then(({user, userId}) => {
+          let jwtToken = '';
+          setUserId(userId); // in case if not set by getSetGoogleUser
+          loginUserToAPI(user, userId).then(
+            async ({res, status, user, userId}) => {
+              if (status == 400) {
+                regsiterUserToAPI(user, userId).then(
+                  ({res, status, user, userId}) => {
+                    if (status == 200) {
+                      loginUserToAPI(user, userId).then(
+                        async ({res, status, user, userId}) => {
+                          jwtToken = await res.token;
+                          setApiJwtToken(jwtToken); // in case not set down
+                        },
+                      );
+                    }
+                  },
+                );
+              } else if (status == 200) {
+                jwtToken = await res.token;
+                setApiJwtToken(jwtToken); // in case not set down
+              } else {
+                Alert.alert('Error! try again!');
+              }
+              if (jwtToken != '') {
+                setApiJwtToken(jwtToken); // first set token
+                // means user logged in and we have token
+                getSetUserDeviceFromAPI(jwtToken, userId).then(
+                  ({res, status, userId}) => {
+                    // some device is registered with this user
+                    if (status == 200) {
+                      setDevice(res);
+                      setIsDeviceRegistered(true);
+                    } else {
+                      console.log('No device registered with this user!');
+                    }
+                    setLoading(false);
+                  },
+                );
+              }
+            },
+          );
+        });
       })();
     } catch (err) {
       console.error(err);
@@ -200,14 +203,14 @@ export default function Home({navigation}) {
       console.log('finally called!!!!!!!');
     }
   }, [isDeviceLoaded == true]);
-  
-  const loadRegisteredDevice = ( ) => {
+
+  const loadRegisteredDevice = () => {
     // setIsDeviceRegistered(true);
     setIsDeviceLoaded(true);
     // console.log('inside load resgistered device function!');
     // console.log(apiJwtToken);
     // console.log(userId);
-    
+
     // if (apiJwtToken != '') {
     //   setLoading(true);
     //   console.log(apiJwtToken);
@@ -230,7 +233,7 @@ export default function Home({navigation}) {
     //     },
     //   );
     // }
-  }
+  };
   return isLoading == true ? (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
       <View style={{flex: 1, justifyContent: 'center'}}>
@@ -254,15 +257,17 @@ export default function Home({navigation}) {
       <View style={styles.btnView}>
         <Button
           color="#9B0177"
-
+          mode="contained"
           style={styles.addDeviceBtn}
-          title="Add device"
+          uppercase={false}
           onPress={() =>
             navigation.navigate('AddDevice', {
               userId: userId,
               token: apiJwtToken,
             })
-          }></Button>
+          }>
+          Add device
+        </Button>
       </View>
 
       <View style={styles.dock}>
@@ -289,7 +294,11 @@ export default function Home({navigation}) {
     </SafeAreaView>
   ) : (
     <SafeAreaView style={[styles.container, GlobalStyles.droidSafeArea]}>
-      <DeviceDashboard style={styles.deviceDashboard} deviceData={device} deleteDeviceFunction={deleteDevice} />
+      <DeviceDashboard
+        style={styles.deviceDashboard}
+        deviceData={device}
+        deleteDeviceFunction={deleteDevice}
+      />
 
       <View style={styles.dock}>
         <View style={styles.navHome}>

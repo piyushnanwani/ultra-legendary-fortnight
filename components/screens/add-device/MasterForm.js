@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {
   Text,
   View,
-  Button,
   Alert,
   TextInput,
   StyleSheet,
@@ -10,9 +9,15 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Platform
+  Platform,
+  Dimensions,
 } from 'react-native';
+import {Button} from 'react-native-paper';
+import FormInput from '../../../src/components/FormInput';
+import FormButton from '../../../src/components/FormButton';
 import {event} from 'react-native-reanimated';
+
+const {width, height} = Dimensions.get('screen');
 
 export default class MasterForm extends React.Component {
   constructor(props) {
@@ -58,22 +63,19 @@ export default class MasterForm extends React.Component {
       console.log(userIdNtoken);
       console.log(userIdNtoken.userId);
       requestBluetoothLocationPermission().then(() => {
-        navigation.navigate(
-          'AddingDevice',
-          {
-            userId: userIdNtoken.userId,
-            wifiName,
-            wifiPassword,
-            token: userIdNtoken.token,
-          },
-        ); 
+        navigation.navigate('AddingDevice', {
+          userId: userIdNtoken.userId,
+          wifiName,
+          wifiPassword,
+          token: userIdNtoken.token,
+        });
       });
     }
-    if( currentStep == 2) {
+    if (currentStep == 2) {
       if (wifiName === '') {
         Alert.alert('Please enter wifi name');
         return;
-      } 
+      }
       if (wifiPassword == '') {
         Alert.alert('Please enter wifi password');
         return;
@@ -98,7 +100,7 @@ export default class MasterForm extends React.Component {
     return (
       <View style={styles.masterForm}>
         <Text style={styles.textStyle}>Reset the device</Text>
-        
+
         <Step1
           currentStep={this.state.currentStep}
           // handleChange={this.handleChange}
@@ -116,20 +118,26 @@ export default class MasterForm extends React.Component {
         />
         <View style={[styles.btnView]}>
           <Button
+            icon="chevron-left"
+            mode="contained"
+            uppercase={false}
             color="#9B0177"
-            disabled={this.state.currentStep==1? true: false}
-            title="Back"
+            disabled={this.state.currentStep == 1 ? true : false}
             onPress={() => {
               this._prev();
-            }}
-          />
+            }}>
+            Back
+          </Button>
           <Button
-            color ="#9B0177"
-            title="Next"
+            icon="chevron-right"
+            color="#9B0177"
+            mode="contained"
+            uppercase={false}
             onPress={() => {
               this._next();
-            }}
-          />
+            }}>
+            Next
+          </Button>
         </View>
       </View>
     );
@@ -159,59 +167,42 @@ function Step2(props) {
   const [wifiPassword, setWifiPassword] = useState('');
   console.log(props);
   return (
- 
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios"? "padding": "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.stepStyle}>
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss}
-      >
-        <View style={styles.inner} >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <Text style={styles.instructionSteps}>
+            Step 2: {'\n\n'}
+            Enter your WiFi credentials {'\n'}
+          </Text>
 
-      <Text style={styles.instructionSteps} >
-        Step 2: {'\n\n'}
-        Enter your WiFi credentials {'\n'}
-      </Text>
+          <FormInput
+            autocapitalize="none"
+            labelName="WiFi Name"
+            value={props.wifiName}
+            onChangeText={(text) => {
+              setWifiName(text);
+              props.handleChange({wifiName: text});
+            }}
+            value={wifiName}
+            style={styles.input}
+          />
 
-      <TextInput
-style={styles.textInput}
-// style={{
-        //   height: 40,
-        //   borderColor: 'gray',
-        //   borderWidth: 1,
-        //   paddingLeft: 5,
-        //   marginBottom: 5
-        // }}
-        placeholder="Enter WiFi Name"
-        value={props.wifiName}
-        onChangeText={(text) => {
-          setWifiName(text);
-          props.handleChange({wifiName: text});
-        }}
-        // onChange={(event) => props.handleChange(event)}
-        value={wifiName}
-      />
-
-      <TextInput
-        style={styles.textInput}
-// style={{
-        //   height: 40,
-        //   borderColor: 'gray',
-        //   borderWidth: 1,
-        //   paddingLeft: 5,
-        // }}
-        placeholder="Enter password"
-        value={props.wifiPassword}
-        secureTextEntry={true}
-        onChangeText={(text) => {
-          setWifiPassword(text);
-          props.handleChange({wifiPassword: text});
-        }}
-        value={wifiPassword}
-      />
+          <FormInput
+            labelName="Password"
+            autocapitalize="none"
+            secureTextEntry={true}
+            onChangeText={(text) => {
+              setWifiPassword(text);
+              props.handleChange({wifiPassword: text});
+            }}
+            value={wifiPassword}
+            style={styles.input}
+          />
         </View>
-        </TouchableWithoutFeedback>  
-    </KeyboardAvoidingView >
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -223,13 +214,19 @@ function Step3(props) {
     <View style={styles.stepStyle}>
       <Text style={styles.instructionSteps}>
         Step 3: {'\n\n'}
-          Turn on your bluetooth and location{'\n'}
+        Turn on your bluetooth and location{'\n'}
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 10,
+    marginTop: 10,
+    width: width / 2.5,
+    height: height / 15,
+  },
   btnView: {
     flex: 1,
     flexDirection: 'row',
@@ -240,34 +237,28 @@ const styles = StyleSheet.create({
   masterForm: {
     flex: 1,
     marginHorizontal: 20,
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   textStyle: {
     textAlign: 'center',
     flex: 1,
-    fontSize:16,
+    fontSize: 16,
     paddingTop: 20,
-    fontWeight: "700"
+    fontWeight: '700',
   },
   stepStyle: {
     paddingHorizontal: 50,
     flex: 2,
   },
   instructionSteps: {
-    color: '#504F4F'
+    color: '#504F4F',
   },
   inner: {
     padding: 24,
     flex: 2,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     alignItems: 'stretch',
-    padding: 20
-  },
-  textInput: {
-    height: 40,
-    borderColor: "#000000",
-    borderBottomWidth: 1,
-    marginBottom: 26
+    padding: 20,
   },
 });
 
@@ -280,7 +271,7 @@ const requestBluetoothLocationPermission = async () => {
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log('You can use the Location');
     } else {
-      Alert.alert('We need these permissions to add the device')
+      Alert.alert('We need these permissions to add the device');
       console.log('Location permission denied');
       // requestBluetoothLocationPermission('')
     }

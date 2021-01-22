@@ -5,11 +5,10 @@ import {
   View,
   Image,
   Text,
-  Button,
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-
+import {Button} from 'react-native-paper';
 import MasterForm from './MasterForm';
 import GlobalStyles from '../../GlobalStyles';
 
@@ -19,13 +18,15 @@ export default function AddDevice({navigation, route}) {
   console.log([userId, token]);
   return (
     <SafeAreaView style={[styles.container]}>
-      <View style={{flex:1, alignItems: 'flex-start'}} >
-      <Button
-        color= "#9B0177"
-        title="Cancel"
-        style={{flex: 1}}
-        onPress={() => navigation.navigate('Home')}></Button>
-
+      <View style={{flex: 1, alignItems: 'flex-start'}}>
+        <Button
+          color="#9B0177"
+          mode="contained"
+          uppercase={false}
+          style={{flex: 1, maxHeight: 35, maxWidth: 120}}
+          onPress={() => navigation.navigate('Home')}>
+          Cancel
+        </Button>
       </View>
       <View style={styles.subContainer}>
         <MasterForm navigation={navigation} userIdNtoken={{userId, token}} />

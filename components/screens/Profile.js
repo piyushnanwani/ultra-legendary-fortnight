@@ -5,14 +5,13 @@ import {
   View,
   Image,
   Text,
-  Button,
   TouchableOpacity,
   SafeAreaView,
   Alert,
 } from 'react-native';
 import GlobalStyles from '../GlobalStyles';
 import {AuthContext} from '../../App';
-
+import {Button} from 'react-native-paper';
 export default function Profile({navigation}) {
   const {getCurrentUser2} = React.useContext(AuthContext);
   const {signOut} = React.useContext(AuthContext);
@@ -53,13 +52,16 @@ export default function Profile({navigation}) {
       {/* Sign Out */}
       <View style={styles.signOutBtnView}>
         <Button
-          color= "#9B0177"
+          color="#9B0177"
           style={styles.signOutBtn}
-          title="Sign out"
+          mode="contained"
+          uppercase={false}
           onPress={() => {
             navigation.goBack();
             signOut();
-          }}></Button>
+          }}>
+          Sign out
+        </Button>
       </View>
 
       {/* Bottom NavBar */}

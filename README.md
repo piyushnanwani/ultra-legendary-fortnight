@@ -3,6 +3,12 @@
 - I worked on this project (Smart Home Solution project ) to get an introduction to the world of Embedded Systems and at the same time upgrade my App Development and Backend Development skills
 - This android app is used to control the I.O.T device [ESP32 microcontroller in this case]. 
 
+## Demo 
+
+<p align="center" >
+<img src="https://github.com/piyushnanwani/ultra-legendary-fortnight/blob/master/smart-home.gif" width=350>
+</p>
+
 ## Steps
 - User sign's in the app using one click Google Sign In
 - User add's the I.O.T. device by clicking on 'Add Device' button.
